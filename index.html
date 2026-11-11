@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اشحن بطاريتك</title>
+<style>
+/* ===== ألوان الصفحة: رمل وفيروزي ===== */
+:root{
+  --page:#FFFAF2;      /* خلفية الصفحة */
+  --card:#FFFFFF;      /* خلفية المربع */
+  --line:#EADFCB;      /* الحدود */
+  --text:#1F3A40;      /* الكتابة الأساسية */
+  --muted:#6F8589;     /* الكتابة الثانوية */
+  --btn:#3CC4BE;       /* الزر */
+  --btn-hover:#2FB0AA; /* الزر عند المرور */
+  --btn-text:#08322F;  /* كتابة الزر */
+  --verse-bg:#F3E9D6;  /* خلفية الآيات */
+  --verse-text:#7A5412;/* كتابة الآيات */
+  --low:#F07A5F;       /* طاقة منخفضة */
+  --mid:#F2B84B;       /* طاقة متوسطة */
+  --high:#3CC4BE;      /* طاقة عالية */
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+body{padding:12px}
+.w{direction:rtl;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.25rem;max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.row{display:flex;align-items:center;gap:10px}
+.row label{font-size:14px;color:var(--muted);min-width:78px}
+input[type=range]{flex:1;accent-color:var(--btn)}
+#lvo{min-width:38px;font-size:14px;font-weight:500}
+.bw{display:flex;align-items:center;justify-content:center;direction:ltr;padding:10px 0 4px}
+.bt{position:relative;display:flex;align-items:center}
+.bt.pop{animation:pop .6s ease}
+.bat{width:170px;height:70px;border:2px solid var(--muted);border-radius:12px;padding:4px;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s}
+.bat.done{border-color:var(--btn);box-shadow:0 0 0 4px rgba(60,196,190,.22)}
+.cap{width:8px;height:26px;background:var(--muted);border-radius:0 4px 4px 0}
+.fill{height:100%;border-radius:7px;width:45%;background:var(--mid);position:relative;overflow:hidden}
+.fill::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-100%)}
+.charging .fill::after{animation:sh .9s linear infinite}
+.pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:4px;font-size:18px;font-weight:500;color:var(--text)}
+.bolt{width:16px;height:16px;opacity:0;transition:opacity .2s}
+.charging .bolt{opacity:1;animation:bp .5s ease-in-out infinite alternate}
+.fx{position:absolute;left:0;top:0;width:170px;height:70px;pointer-events:none;z-index:2}
+.sp{position:absolute;font-weight:700;line-height:1;animation:rise 1s ease-out forwards}
+button{align-self:center;height:40px;padding:0 24px;border:0;border-radius:8px;background:var(--btn);color:var(--btn-text);font:inherit;font-size:15px;font-weight:500;cursor:pointer;transition:background .15s,transform .15s}
+button:hover{background:var(--btn-hover)}
+button:active{transform:scale(.96)}
+.msg{background:var(--page);border-radius:8px;padding:12px 14px;font-size:16px;line-height:1.8;color:var(--text);animation:up .5s ease both}
+.ref{margin-top:10px;padding:10px 12px;background:var(--verse-bg);border-radius:8px;font-family:serif;font-size:18px;line-height:1.9;color:var(--verse-text);text-align:center}
+.bs{font-size:17px;padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.v{margin-top:6px;opacity:0;animation:up .6s ease both}
+.src{display:block;font-family:system-ui,sans-serif;font-size:12px;color:var(--muted)}
+.act{margin-top:10px;padding-top:8px;border-top:1px solid var(--line);font-size:14px;color:var(--muted);opacity:0;animation:up .6s ease both}
+.act b{font-weight:500;color:var(--text)}
+@keyframes sh{to{transform:translateX(100%)}}
+@keyframes bp{from{transform:scale(.85)}to{transform:scale(1.2)}}
+@keyframes pop{0%{transform:scale(1)}35%{transform:scale(1.07)}70%{transform:scale(.98)}100%{transform:scale(1)}}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes rise{0%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.1) rotate(var(--r))}}
+@media (prefers-reduced-motion:reduce){
+  .msg,.v,.act,.bt.pop,.charging .fill::after,.charging .bolt{animation:none!important}
+  .v,.act{opacity:1!important}
+}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="row"><label for="lv">طاقتك دلوقتي</label><input id="lv" type="range" min="0" max="100" step="1" value="45"><span id="lvo">45%</span></div>
+  <div class="bw">
+    <div class="bt" id="bt">
+      <div class="bat" id="bat">
+        <div class="fill" id="fl" style="width:45%"></div>
+        <div class="pct"><svg class="bolt" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="currentColor"/></svg><span id="pn">45%</span></div>
+      </div>
+      <div class="cap"></div>
+      <div class="fx" id="fx"></div>
+    </div>
+  </div>
+  <button id="go" type="button">اشحن بطاريتي</button>
+  <div id="out"></div>
+</div>
+<script>
+var lv=document.getElementById("lv"),fl=document.getElementById("fl"),pn=document.getElementById("pn"),bat=document.getElementById("bat"),bt=document.getElementById("bt"),fx=document.getElementById("fx"),btn=document.getElementById("go"),out=document.getElementById("out"),busy=false;
+var RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function col(v){return v<=25?"var(--low)":v<=60?"var(--mid)":"var(--high)"}
+function show(v){fl.style.width=v+"%";fl.style.background=col(v);pn.textContent=v+"%"}
+function reset(){bat.classList.remove("done","charging");out.innerHTML=""}
+lv.oninput=function(){if(busy)return;var v=Math.round(+lv.value);document.getElementById("lvo").textContent=v+"%";show(v);reset()};
+show(45);
+function spark(burst){
+if(RM)return;
+var e=document.createElement("span");e.className="sp";e.textContent="+";
+e.style.left=(10+Math.random()*150)+"px";e.style.top=burst?"20px":"48px";
+e.style.fontSize=(14+Math.random()*10)+"px";
+e.style.color=Math.random()<.5?"var(--btn)":"var(--mid)";
+e.style.setProperty("--dx",Math.round((Math.random()-.5)*(burst?180:40))+"px");
+e.style.setProperty("--dy",Math.round(-(burst?70+Math.random()*50:55+Math.random()*30))+"px");
+e.style.setProperty("--r",Math.round((Math.random()-.5)*180)+"deg");
+e.style.animationDuration=(burst?1.1:0.9+Math.random()*0.4)+"s";
+e.onanimationend=function(){e.remove()};
+fx.appendChild(e)}
+
+/* ====== الرسائل: غيّر أي جملة من هنا ====== */
+var M=[
+[25,"حتى وإنت تعبان، قلبك بيفكر في وجع ناس تانية، وده معدنك. ارتاح شوية، لأن القافلة محتاجاك بخير، وربنا ما كلّفك فوق طاقتك.",
+ [["لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا","سورة البقرة، آية 286"],["فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ۝ إِنَّ مَعَ الْعُسْرِ يُسْرًا","سورة الشرح، آية 5 و6"]],
+ "فكّر في مريض هتخفف عنه، وخد 3 أنفاس بطيئة، وقول: الحمد لله."],
+[50,"كل خطوة بتخطيها بتقرّبك من مريض مستني حد يحس بيه. إنك لسه بتكمّل رغم التعب، ده أكبر دليل إنك قادر، وربنا شايف تعبك وفي عونك.",
+ [["وَالَّذِينَ جَاهَدُوا فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا","سورة العنكبوت، آية 69"],["وَافْعَلُوا الْخَيْرَ لَعَلَّكُمْ تُفْلِحُونَ","سورة الحج، آية 77"]],
+ "كمّل بنفس الاتجاه: اعمل خطوة صغيرة واحدة دلوقتي، وقول: بسم الله."],
+[75,"شحنتك كويسة، وفي ناس كتير محتاجة طاقتك دي. كمّل بثبات، لأن وجودك ممكن يخفف ألم إنسان.",
+ [["وَاصْبِرْ فَإِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ","سورة هود، آية 115"],["وَمَا تُقَدِّمُوا لِأَنفُسِكُم مِّنْ خَيْرٍ تَجِدُوهُ عِندَ اللَّهِ","سورة البقرة، آية 110"]],
+ "اكتب أهم حاجة هتجهّزها للقافلة، وابدأ فيها وقول: بسم الله."],
+[100,"بطاريتك مليانة، وده من فضل ربنا. استغل الطاقة دي إنك تبقى سبب في راحة مريض، وهتحس بقيمة وجودك وإنت وسط الناس اللي بتساعدهم.",
+ [["وَمَنْ أَحْيَاهَا فَكَأَنَّمَا أَحْيَا النَّاسَ جَمِيعًا","سورة المائدة، آية 32"],["وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ","سورة المائدة، آية 2"]],
+ "ادعُ حد قريب منك يتطوع معاك في القافلة، وقول: الحمد لله على نعمة الصحة."]];
+
+function finish(s){
+show(100);bat.classList.remove("charging");bat.classList.add("done");
+bt.classList.remove("pop");void bt.offsetWidth;bt.classList.add("pop");
+for(var k=0;k<14;k++)spark(true);
+var m=M[3];for(var i=0;i<4;i++){if(s<=M[i][0]){m=M[i];break}}
+var vs="";for(var j=0;j<m[2].length;j++){vs+='<div class="v" style="animation-delay:'+(0.35+j*0.3)+'s">'+m[2][j][0]+'<span class="src">'+m[2][j][1]+'</span></div>'}
+var d=(0.35+m[2].length*0.3+0.1);
+out.innerHTML='<div class="msg">'+m[1]+'<div class="ref"><div class="bs">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>'+vs+'</div><div class="act" style="animation-delay:'+d+'s"><b>خطوتك دلوقتي:</b> '+m[3]+'</div></div>';
+btn.textContent="اشحن بطاريتي";busy=false}
+
+btn.onclick=function(){
+if(busy)return;busy=true;reset();
+var s=Math.round(+lv.value);
+bat.classList.add("charging");btn.textContent="جاري الشحن…";
+var d=1000+(100-s)*18,t0=performance.now(),last=0;
+function step(now){
+var p=Math.min(1,(now-t0)/d),e=1-Math.pow(1-p,3),v=Math.round(s+(100-s)*e);
+show(v);
+if(now-last>130){spark(false);last=now}
+if(p<1){requestAnimationFrame(step)}else{finish(s)}}
+requestAnimationFrame(step)};
+</script>
+</body>
+</html>
